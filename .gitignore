@@ -1,0 +1,20 @@
+# env
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# local trash / backups
+_trash_local/
+*copy*.py
+*.bak
+*.backup
+main_backup_*.py
+
+# runtime / local state
+delayed_tracks.json
