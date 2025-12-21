@@ -1,0 +1,45 @@
+diff --git a/main.py b/main.py
+index 0000000..1111111 100644
+--- a/main.py
++++ b/main.py
+@@
+ def restore_delayed_sends_on_boot() -> None:
+     """
+     После рестарта:
+@@
+     log.info(
+         f"[DELAYED] boot restore: rescheduled={restored}, "
+         f"sent_immediately={sent_immediately}"
+     )
+
++
++# =========================================================
++# DELAYED RESTORE GUARD (works under gunicorn too)
++# =========================================================
++
++_DELAYED_BOOT_RESTORE_DONE = False
++
++def _restore_delayed_sends_once() -> None:
++    global _DELAYED_BOOT_RESTORE_DONE
++    if _DELAYED_BOOT_RESTORE_DONE:
++        return
++    _DELAYED_BOOT_RESTORE_DONE = True
++    try:
++        restore_delayed_sends_on_boot()
++    except Exception:
++        log.exception("[DELAYED] restore on boot failed")
++
+@@
+ app = Flask(__name__)
+ 
++@app.before_request
++def _delayed_restore_on_first_request():
++    # gunicorn doesn't execute __main__, so restore here once
++    _restore_delayed_sends_once()
++
+@@
+ if __name__ == "__main__":
+@@
+     _fetch_bothelp_token(force=True)
+-    restore_delayed_sends_on_boot()
++    _restore_delayed_sends_once()
