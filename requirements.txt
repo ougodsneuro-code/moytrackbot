@@ -22,7 +22,6 @@ jiter==0.9.1
 MarkupSafe==2.1.5
 openai==2.2.0
 packaging==25.0
-pkg_resources==0.0.0
 pydantic==2.10.6
 pydantic_core==2.27.2
 PySocks==1.7.1
