@@ -1426,6 +1426,25 @@ def restore_delayed_sends_on_boot() -> None:
     )
 
 
+# =========================================================
+# DELAYED RESTORE GUARD (works under gunicorn too)
+# =========================================================
+
+_DELAYED_BOOT_RESTORE_DONE = False
+
+
+def _restore_delayed_sends_once() -> None:
+    global _DELAYED_BOOT_RESTORE_DONE
+    if _DELAYED_BOOT_RESTORE_DONE:
+        return
+    _DELAYED_BOOT_RESTORE_DONE = True
+    try:
+        restore_delayed_sends_on_boot()
+    except Exception:
+        log.exception("[DELAYED] restore on boot failed")
+
+
+
 def _schedule_delayed_send(
     cuid: str,
     provider: str,
@@ -1973,6 +1992,12 @@ def handle_edit_story(
 
 app = Flask(__name__)
 
+@app.before_request
+def _delayed_restore_on_first_request():
+    _restore_delayed_sends_once()
+
+
+
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({
@@ -2483,7 +2508,7 @@ if __name__ == "__main__":
         f"COMET_LLM_MODEL_MINI={COMET_LLM_MODEL_MINI}"
     )
     _fetch_bothelp_token(force=True)
-    restore_delayed_sends_on_boot()
+    _restore_delayed_sends_once()
     try:
         from waitress import serve
         log.info(f"Starting waitress on 0.0.0.0:{PORT}")
