@@ -18,3 +18,8 @@ main_backup_*.py
 
 # runtime / local state
 delayed_tracks.json
+
+# backups
+bckps/
+*.bak
+*.patch
