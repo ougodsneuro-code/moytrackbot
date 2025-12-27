@@ -1756,7 +1756,7 @@ app = Flask(__name__)
 
 @app.before_request
 def _delayed_restore_on_first_request():
-    _restore_delayed_sends_once()
+    _restore_delayed_sends_once(_send_tracks_to_user)
 
 
 
@@ -2270,7 +2270,7 @@ if __name__ == "__main__":
         f"COMET_LLM_MODEL_MINI={COMET_LLM_MODEL_MINI}"
     )
     _fetch_bothelp_token(force=True)
-    _restore_delayed_sends_once()
+    _restore_delayed_sends_once(_send_tracks_to_user)
     try:
         from waitress import serve
         log.info(f"Starting waitress on 0.0.0.0:{PORT}")
