@@ -8,6 +8,11 @@ import requests
 import errno
 from typing import Dict, Any, Optional, List, Tuple, Set
 
+from app.bothelp.client import (
+    send_message_to_bothelp_via_cuid,
+    upload_audio_to_bothelp,
+)
+
 from flask import Flask, request, jsonify, abort
 from app.delayed.store import DELAYED_TRACKS, DELAYED_TRACKS_LOCK
 from app.delayed.scheduler import (
